@@ -3,7 +3,7 @@ import {withFormik, Form, Field} from "formik";
 import { axiosWithAuth } from '../utilities/axiosWithAuth';
 import axios from 'axios';
 
-function FriendForm({values}){
+function FriendForm({values, status}){
     console.log(values)
     const [friends, setFriends]= useState([])
      const getFriends = ()=>{
@@ -15,7 +15,16 @@ function FriendForm({values}){
             })
          .catch(err => console.log(err))
      }
-     useEffect(()=>getFriends(), [])
+     useEffect(()=>{
+         getFriends()
+         if(status){
+             setFriends([...friends, status])
+         }
+        
+        
+        }
+   
+     , [status])
     return(
         <div>
         <Form>
@@ -48,13 +57,13 @@ const FormikFriendForm = withFormik({
         }
 
     },
-    handleSubmit(values, {resetForm, setSubmitting, setValues}){
+    handleSubmit(values, {resetForm, setSubmitting, setStatus}){
         console.log(values)
         axiosWithAuth()
         .post("http://localhost:5000/api/friends", values)
         .then(res => {
             console.log(res.data)
-            setValues(res.data)
+            setStatus(res.data)
             resetForm();
             setSubmitting(false);
         })
